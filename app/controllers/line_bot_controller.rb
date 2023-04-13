@@ -7,22 +7,16 @@ class LineBotController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          # ユーザーからのメッセージが「出勤なう」だった場合のみにメッセージを返す
-          if event.message["text"] == "出勤なう"
-            uri = URI('https://qiita-api.vercel.app/api/trend')
-            response = Net::HTTP.get_response(uri)
-            response = JSON.parse(response.body)
-            # LINEへ返すレスポンス
-            message = []
-            # トレンド上位5記事のみ抽出
-            5.times {|i|
-              hash = {}
-              hash[:type] = "text"
-              hash[:text] = response[i]["node"]["linkUrl"]
-              message.push(hash)
-            }
-            client.reply_message(event['replyToken'],  message)
-          end
+          # ここからGPT
+          text = event.message["text"] # 受け取るメッセージ
+          uri = URI("#{ENV['URI']}/chat?text=#{text}") # リクエスト先のURI
+          response = Net::HTTP.get_response(uri) # APIにリクエストを送信
+          response = JSON.parse(response.body) # 受け取ったJSONをパース
+          chat = {
+            type: "text",
+            text: response.dig("choices", 0, "message", "content")
+          } # LINEへ返すレスポンス
+          client.reply_message(event['replyToken'], chat) # LINEへ返す
         end
       end
     end
