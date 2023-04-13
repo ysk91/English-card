@@ -29,6 +29,8 @@ gem 'dotenv-rails'
 
 # Line bot開発用
 gem 'line-bot-api'
+# ChatGPT開発用
+gem 'ruby-openai'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
