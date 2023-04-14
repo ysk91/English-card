@@ -33,3 +33,7 @@
 # .env
 .env.development
 .env.test
+
+# test for ChatGPT
+hello.rb
+chat_test.rb
