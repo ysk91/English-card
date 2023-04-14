@@ -1,4 +1,6 @@
 class LineBotController < ApplicationController
+  require 'uri'
+
   def callback
     body = request.body.read
     events = client.parse_events_from(body)
@@ -7,16 +9,15 @@ class LineBotController < ApplicationController
       when Line::Bot::Event::Message
         case event.type
         when Line::Bot::Event::MessageType::Text
-          # ここからGPT
-          text = event.message["text"] # 受け取るメッセージ
-          uri = URI("#{ENV['URI']}/chat?text=#{text}") # リクエスト先のURI
-          response = Net::HTTP.get_response(uri) # APIにリクエストを送信
-          response = JSON.parse(response.body) # 受け取ったJSONをパース
+          text = URI.encode_www_form_component(event.message["text"])
+          uri = URI("#{ENV['URI']}/chat?text=#{text}")
+          response = Net::HTTP.get_response(uri)
+          response = JSON.parse(response.body)
           chat = {
             type: "text",
             text: response.dig("choices", 0, "message", "content")
-          } # LINEへ返すレスポンス
-          client.reply_message(event['replyToken'], chat) # LINEへ返す
+          }
+          client.reply_message(event['replyToken'], chat)
         end
       end
     end

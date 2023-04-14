@@ -26,10 +26,7 @@ gem 'bootsnap', '>= 1.4.4', require: false
 # gem 'rack-cors'
 
 gem 'dotenv-rails'
-
-# Line bot開発用
 gem 'line-bot-api'
-# ChatGPT開発用
 gem 'ruby-openai'
 
 group :development, :test do
